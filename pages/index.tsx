@@ -10,11 +10,10 @@ import { fetcher } from '../utils/fetcher';
 export default function Home() {
   const [offset, setOffset] = useState(0);
   const [limit, setLimit] = useState(10);
-  const { data, error } = useSWR<{ results: Pokemon[]}>(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`, fetcher);
+  const { data, error, isLoading } = useSWR<{ results: Pokemon[]}>(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`, fetcher);
 
   const handleOptionSelection = (e) => {
-    console.log(e.target.value);
-    setLimit(e.target.value);
+    setLimit(Number(e.target.value));
     setOffset(0);
   }
   
@@ -22,7 +21,7 @@ export default function Home() {
     return (<pre>{JSON.stringify(error, null, 2)}</pre>)
   }
   
-  if(!data) {
+  if(isLoading) {
     return (<span>Loading...</span>)
   }
 
@@ -41,7 +40,7 @@ export default function Home() {
           }
         </section>
         <br />
-        <button type="button" disabled={offset < limit} onClick={() => setOffset(offset - limit)}>Previous</button>
+        <button type="button" disabled={offset === 0} onClick={() => setOffset(offset - limit)}>Previous</button>
         <button type="button" onClick={() => setOffset(offset + limit)}>Next</button>
         <select defaultValue={limit} onChange={(e) => handleOptionSelection(e)}>
           <option value={10}>10</option>
